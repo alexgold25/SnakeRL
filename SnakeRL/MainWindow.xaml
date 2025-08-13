@@ -8,6 +8,14 @@
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="#222" Height="30">
             <Label x:Name="ScoreLabel" Foreground="White" FontSize="16" Padding="8,0"/>
         </StackPanel>
-        <Canvas Name="GameCanvas" Background="Black"/>
+        <Grid>
+            <Canvas Name="GameCanvas" Background="Black"/>
+            <Grid x:Name="StartOverlay" Background="#AA000000">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="#222" Padding="20" Spacing="10">
+                    <Button x:Name="StartButton" Content="Start" Width="120" Height="40" Click="StartButton_Click"/>
+                    <TextBlock Text="Press Start or any arrow key to begin" Foreground="White" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </DockPanel>
 </Window>
