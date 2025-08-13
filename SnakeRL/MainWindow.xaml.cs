@@ -22,6 +22,7 @@ namespace SnakeRL
         bool _gameRunning = false;
         List<PlayerProfile> _profiles = new();
         PlayerProfile? _currentProfile;
+        bool _playerSelected;
         string ProfilesPath => System.IO.Path.Combine(AppContext.BaseDirectory, "players.json");
 
         public MainWindow()
@@ -73,6 +74,12 @@ namespace SnakeRL
                 _timer.Stop();
                 _gameRunning = false;
                 StartOverlay.Visibility = Visibility.Visible;
+                PlayerComboBox.Visibility = Visibility.Collapsed;
+                NewPlayerTextBox.Visibility = Visibility.Collapsed;
+                NamePromptText.Visibility = Visibility.Collapsed;
+                StartButton.Visibility = Visibility.Visible;
+                StartHintText.Visibility = Visibility.Visible;
+                StartButton.IsEnabled = true;
                 if (_currentProfile != null)
                 {
                     if (_game.Snake.Count > _currentProfile.BestLength)
@@ -110,6 +117,16 @@ namespace SnakeRL
 
             if (_currentProfile != null)
             {
+                if (!_playerSelected)
+                {
+                    _playerSelected = true;
+                    PlayerComboBox.Visibility = Visibility.Collapsed;
+                    NewPlayerTextBox.Visibility = Visibility.Collapsed;
+                    NamePromptText.Visibility = Visibility.Collapsed;
+                    StartButton.Visibility = Visibility.Visible;
+                    StartHintText.Visibility = Visibility.Visible;
+                }
+
                 _currentProfile.GamesPlayed++;
                 SaveProfiles();
             }
@@ -176,27 +193,23 @@ namespace SnakeRL
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (StartOverlay.Visibility == Visibility.Visible)
+            bool overlayVisible = StartOverlay.Visibility == Visibility.Visible;
+            if (overlayVisible && !StartButton.IsEnabled)
                 return;  // allow typing without triggering game controls
 
-            switch (e.Key)
+            Dir? action = e.Key switch
             {
-                case Key.W:
-                case Key.Up:
-                    StartGame();
-                    _game.LastAction = Dir.Up; break;
-                case Key.D:
-                case Key.Right:
-                    StartGame();
-                    _game.LastAction = Dir.Right; break;
-                case Key.S:
-                case Key.Down:
-                    StartGame();
-                    _game.LastAction = Dir.Down; break;
-                case Key.A:
-                case Key.Left:
-                    StartGame();
-                    _game.LastAction = Dir.Left; break;
+                Key.W or Key.Up => Dir.Up,
+                Key.D or Key.Right => Dir.Right,
+                Key.S or Key.Down => Dir.Down,
+                Key.A or Key.Left => Dir.Left,
+                _ => null
+            };
+
+            if (action != null)
+            {
+                StartGame();
+                _game.LastAction = action.Value;
             }
         }
     }
