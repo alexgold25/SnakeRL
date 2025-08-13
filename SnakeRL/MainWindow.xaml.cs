@@ -15,6 +15,7 @@ namespace SnakeRL
         Game _game = new(GridW, GridH);
         DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(120) };
         int _score = 0;
+        bool _gameRunning = false;
 
         public MainWindow()
         {
@@ -23,7 +24,6 @@ namespace SnakeRL
             Height = GridH * Cell + 39 + 30;
 
             _timer.Tick += (_, __) => GameTick();
-            _timer.Start();
             UpdateScore();
             Draw();
         }
@@ -40,6 +40,19 @@ namespace SnakeRL
             }
             UpdateScore();
             Draw();
+        }
+
+        void StartGame()
+        {
+            if (_gameRunning) return;
+            _gameRunning = true;
+            StartOverlay.Visibility = Visibility.Collapsed;
+            _timer.Start();
+        }
+
+        private void StartButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartGame();
         }
 
         void UpdateScore()
@@ -80,15 +93,19 @@ namespace SnakeRL
             {
                 case Key.W:
                 case Key.Up:
+                    StartGame();
                     _game.LastAction = Dir.Up; break;
                 case Key.D:
                 case Key.Right:
+                    StartGame();
                     _game.LastAction = Dir.Right; break;
                 case Key.S:
                 case Key.Down:
+                    StartGame();
                     _game.LastAction = Dir.Down; break;
                 case Key.A:
                 case Key.Left:
+                    StartGame();
                     _game.LastAction = Dir.Left; break;
             }
         }
