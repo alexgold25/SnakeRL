@@ -157,6 +157,9 @@ namespace SnakeRL
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (StartOverlay.Visibility == Visibility.Visible)
+                return;  // allow typing without triggering game controls
+
             switch (e.Key)
             {
                 case Key.W:
