@@ -1,0 +1,38 @@
+syntax = "proto3";
+package snake;
+option csharp_namespace = "SnakeRL.Grpc";
+
+message Observation {
+  repeated int32 board = 1;
+}
+
+message Action {
+  enum Direction {
+    UP = 0;
+    RIGHT = 1;
+    DOWN = 2;
+    LEFT = 3;
+  }
+  Direction dir = 1;
+}
+
+message StepRequest {
+  Action action = 1;
+}
+
+message StepResponse {
+  Observation observation = 1;
+  double reward = 2;
+  bool done = 3;
+}
+
+message ResetRequest {}
+
+message ResetResponse {
+  Observation observation = 1;
+}
+
+service Snake {
+  rpc Step (StepRequest) returns (StepResponse);
+  rpc Reset (ResetRequest) returns (ResetResponse);
+}
