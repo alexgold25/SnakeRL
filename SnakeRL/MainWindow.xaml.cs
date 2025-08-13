@@ -22,7 +22,7 @@ namespace SnakeRL
         bool _gameRunning = false;
         List<PlayerProfile> _profiles = new();
         PlayerProfile? _currentProfile;
-        string ProfilesPath => Path.Combine(AppContext.BaseDirectory, "players.json");
+        string ProfilesPath => System.IO.Path.Combine(AppContext.BaseDirectory, "players.json");
 
         public MainWindow()
         {
