@@ -15,13 +15,13 @@ namespace SnakeRL.Grpc
 
         public Task<ResetResponse> ResetAsync()
         {
-            return _client.ResetAsync(new ResetRequest()).ResponseAsync;
+            return _client.ResetAsync(new ResetRequest());
         }
 
         public Task<StepResponse> StepAsync(Action action)
         {
             var request = new StepRequest { Action = action };
-            return _client.StepAsync(request).ResponseAsync;
+            return _client.StepAsync(request);
         }
     }
 }
