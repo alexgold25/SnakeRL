@@ -51,6 +51,7 @@ namespace SnakeRL
             }
             PlayerComboBox.ItemsSource = _profiles;
             if (_profiles.Count > 0) PlayerComboBox.SelectedIndex = 0;
+            UpdateStartButtonState();
         }
 
         void SaveProfiles()
@@ -113,6 +114,8 @@ namespace SnakeRL
                 SaveProfiles();
             }
 
+            UpdateStartButtonState();
+
             _gameRunning = true;
             StartOverlay.Visibility = Visibility.Collapsed;
             _timer.Start();
@@ -121,6 +124,22 @@ namespace SnakeRL
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             StartGame();
+        }
+
+        private void PlayerComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateStartButtonState();
+        }
+
+        private void NewPlayerTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateStartButtonState();
+        }
+
+        void UpdateStartButtonState()
+        {
+            StartButton.IsEnabled = PlayerComboBox.SelectedItem != null ||
+                                   !string.IsNullOrWhiteSpace(NewPlayerTextBox.Text);
         }
 
         void UpdateScore()
