@@ -16,6 +16,8 @@
                         Background="#222"
                         Padding="20">
                     <StackPanel>
+                        <ComboBox x:Name="PlayerComboBox" Width="120" Margin="0 0 0 10" DisplayMemberPath="Name"/>
+                        <TextBox x:Name="NewPlayerTextBox" Width="120" Margin="0 0 0 10"/>
                         <Button x:Name="StartButton" Content="Start" Width="120" Height="40" Click="StartButton_Click" Margin="0 0 0 10"/>
                         <TextBlock Text="Press Start or any arrow key to begin" Foreground="White" HorizontalAlignment="Center"/>
                     </StackPanel>
