@@ -34,7 +34,9 @@ namespace SnakeRL
             if (reward > 0) _score += (int)reward;
             if (done)
             {
-                MessageBox.Show($"Игра окончена! Очки: {_score}", "SnakeRL");
+                _timer.Stop();
+                _gameRunning = false;
+                StartOverlay.Visibility = Visibility.Visible;
                 _score = 0;
                 _game.Reset();
             }
