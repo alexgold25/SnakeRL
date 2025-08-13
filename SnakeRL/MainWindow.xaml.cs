@@ -1,5 +1,9 @@
 ﻿using SnakeRL.GameLogic;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,6 +20,9 @@ namespace SnakeRL
         DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(120) };
         int _score = 0;
         bool _gameRunning = false;
+        List<PlayerProfile> _profiles = new();
+        PlayerProfile? _currentProfile;
+        string ProfilesPath => Path.Combine(AppContext.BaseDirectory, "players.json");
 
         public MainWindow()
         {
@@ -26,6 +33,34 @@ namespace SnakeRL
             _timer.Tick += (_, __) => GameTick();
             UpdateScore();
             Draw();
+            LoadProfiles();
+        }
+
+        void LoadProfiles()
+        {
+            if (File.Exists(ProfilesPath))
+            {
+                try
+                {
+                    var json = File.ReadAllText(ProfilesPath);
+                    var list = JsonSerializer.Deserialize<List<PlayerProfile>>(json);
+                    if (list != null)
+                        _profiles = list;
+                }
+                catch { }
+            }
+            PlayerComboBox.ItemsSource = _profiles;
+            if (_profiles.Count > 0) PlayerComboBox.SelectedIndex = 0;
+        }
+
+        void SaveProfiles()
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(_profiles, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(ProfilesPath, json);
+            }
+            catch { }
         }
 
         void GameTick()
@@ -37,6 +72,12 @@ namespace SnakeRL
                 _timer.Stop();
                 _gameRunning = false;
                 StartOverlay.Visibility = Visibility.Visible;
+                if (_currentProfile != null)
+                {
+                    if (_game.Snake.Count > _currentProfile.BestLength)
+                        _currentProfile.BestLength = _game.Snake.Count;
+                    SaveProfiles();
+                }
                 _score = 0;
                 _game.Reset();
             }
@@ -47,6 +88,31 @@ namespace SnakeRL
         void StartGame()
         {
             if (_gameRunning) return;
+
+            var name = NewPlayerTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(name))
+            {
+                _currentProfile = _profiles.FirstOrDefault(p => p.Name == name);
+                if (_currentProfile == null)
+                {
+                    _currentProfile = new PlayerProfile { Name = name };
+                    _profiles.Add(_currentProfile);
+                    PlayerComboBox.Items.Refresh();
+                }
+                PlayerComboBox.SelectedItem = _currentProfile;
+                NewPlayerTextBox.Clear();
+            }
+            else if (PlayerComboBox.SelectedItem is PlayerProfile selected)
+            {
+                _currentProfile = selected;
+            }
+
+            if (_currentProfile != null)
+            {
+                _currentProfile.GamesPlayed++;
+                SaveProfiles();
+            }
+
             _gameRunning = true;
             StartOverlay.Visibility = Visibility.Collapsed;
             _timer.Start();
